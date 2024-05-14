@@ -10,17 +10,34 @@ const totalShoppingCart = computed(() => store.total)
 export default defineComponent({
     components: { ShoppingCartOutlined, CloseOutlined },
 
+    created() {
+        this.fetchData();
+    },
+
     data() {
         return {
             totalShoppingCart,
+            loading: true,
             items: [
-                { id: 1, company_name: 'CocaCola', total: 100000.50, days_limit: 30 },
-                { id: 2, company_name: 'Nestle', total: 200000.50, days_limit: 60  },
-                { id: 3, company_name: 'Pepsi', total: 80000.50, days_limit: 90  }
             ]
         };
     },
     methods: {
+        async fetchData() {
+            try {
+                const response = await fetch('http://localhost:5062/api/Oportunity');
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+                this.items = data;
+            } catch (error) {
+                this.error = error;
+            } finally {
+                this.loading = false;
+            }
+        },
         add(e, item) {
             e.preventDefault()
             store.add(item)
@@ -39,22 +56,24 @@ export default defineComponent({
     <div class="marketplace">
         <a-row>
             <a-col :span="20">
-                <a-card v-for="(item, index) in items" :key="index" :title="item.company_name" :bordered="false" style="width: 300px">
-                    <p>{{ item.total }}</p>
-                    <p>Plazo: {{ item.days_limit }}</p>
-                    <a-button v-if="item.added" @click="(e) => remove(e, item)" type="primary" danger shape="round" :size="size">
-                        <template #icon>
-                        <close-outlined />
-                        </template>
-                        Remove
-                    </a-button>
-                    <a-button v-else @click="(e) => add(e, item)" type="primary" shape="round" :size="size">
-                        <template #icon>
-                        <shopping-cart-outlined />
-                        </template>
-                        Invest
-                    </a-button>
-                </a-card>
+                <a-flex gap="middle" wrap="wrap" >
+                    <a-card v-for="(item, index) in items" :key="index" :title="item.company.name" :bordered="false" style="width: 300px">
+                        <p>{{ item.total }}</p>
+                        <p>Plazo: {{ item.daysLimit }}</p>
+                        <a-button v-if="item.added" @click="(e) => remove(e, item)" type="primary" danger shape="round" :size="size">
+                            <template #icon>
+                            <close-outlined />
+                            </template>
+                            Remove
+                        </a-button>
+                        <a-button v-else @click="(e) => add(e, item)" type="primary" shape="round" :size="size">
+                            <template #icon>
+                            <shopping-cart-outlined />
+                            </template>
+                            Invest
+                        </a-button>
+                    </a-card>
+                </a-flex>
             </a-col>
             <a-col :span="4">
                 <p>Summary</p>
