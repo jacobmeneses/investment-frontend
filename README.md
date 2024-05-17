@@ -2,4 +2,4 @@
 
 This is the frontend part of this repo:
 
-https://github.com/jacobmeneses/InvestmentExercise
+https://github.com/jacobmeneses/investment-backend

@@ -25,7 +25,7 @@ export default defineComponent({
     methods: {
         async fetchData() {
             try {
-                const response = await fetch('http://localhost:5062/api/Oportunity');
+                const response = await fetch('http://localhost:3010/api/v1/oportunity');
 
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
